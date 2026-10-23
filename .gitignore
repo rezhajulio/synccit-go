@@ -1,0 +1,5 @@
+/synccit
+*.db
+*.db-shm
+*.db-wal
+/data/

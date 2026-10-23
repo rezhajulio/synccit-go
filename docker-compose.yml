@@ -1,0 +1,11 @@
+services:
+  synccit:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      SYNCCIT_DB: /data/synccit.db
+      # SYNCCIT_ALLOW_REGISTRATION: "true"  # default: locked, use the CLI
+    restart: unless-stopped
