@@ -16,7 +16,7 @@ import (
 	"github.com/rezhajulio/synccit-go/internal/store"
 )
 
-func newTestHandler(t *testing.T, allowRegistration bool) (*store.Store, http.Handler) {
+func newTestHandler(t testing.TB, allowRegistration bool) (*store.Store, http.Handler) {
 	t.Helper()
 	st, err := store.Open(filepath.Join(t.TempDir(), "test.db"))
 	if err != nil {
@@ -26,7 +26,7 @@ func newTestHandler(t *testing.T, allowRegistration bool) (*store.Store, http.Ha
 	return st, NewServer(st, allowRegistration).Handler()
 }
 
-func createUser(t *testing.T, st *store.Store, username, password string) int64 {
+func createUser(t testing.TB, st *store.Store, username, password string) int64 {
 	t.Helper()
 	hash, err := auth.HashPassword(password)
 	if err != nil {
@@ -39,7 +39,7 @@ func createUser(t *testing.T, st *store.Store, username, password string) int64 
 	return id
 }
 
-func post(t *testing.T, h http.Handler, path string, form url.Values) *httptest.ResponseRecorder {
+func post(t testing.TB, h http.Handler, path string, form url.Values) *httptest.ResponseRecorder {
 	t.Helper()
 	req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -48,7 +48,7 @@ func post(t *testing.T, h http.Handler, path string, form url.Values) *httptest.
 	return rec
 }
 
-func postJSON(t *testing.T, h http.Handler, path, payload string) *httptest.ResponseRecorder {
+func postJSON(t testing.TB, h http.Handler, path, payload string) *httptest.ResponseRecorder {
 	t.Helper()
 	return post(t, h, path, url.Values{"data": {payload}, "type": {"json"}})
 }

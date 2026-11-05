@@ -8,7 +8,8 @@ package api
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"encoding/xml"
 	"net"
 	"net/http"
@@ -124,7 +125,7 @@ func parseFlexIntValue(b []byte) int64 {
 }
 
 func (l *flexLink) UnmarshalJSON(b []byte) error {
-	var raw map[string]json.RawMessage
+	var raw map[string]jsontext.Value
 	if err := json.Unmarshal(b, &raw); err != nil {
 		return err
 	}
@@ -284,11 +285,11 @@ func parseDataRequest(w http.ResponseWriter, r *http.Request) (rd *requestData, 
 // ---- response writers (match the original xerror/xsuccess/xdevice/xlogin) ----
 
 func marshalJSON(v any) string {
-	var buf bytes.Buffer
-	enc := json.NewEncoder(&buf)
-	enc.SetEscapeHTML(false)
-	_ = enc.Encode(v)
-	return strings.TrimSuffix(buf.String(), "\n")
+	// v2: no Encoder type in this package (it lives in jsontext) and
+	// Marshal adds no trailing newline, so no TrimSuffix needed.
+	// EscapeForHTML(false) preserves the v1 SetEscapeHTML(false) behaviour.
+	b, _ := json.Marshal(v, jsontext.EscapeForHTML(false))
+	return string(b)
 }
 
 func xmlEscape(s string) string {
